@@ -8,41 +8,40 @@ pub struct Node<T> {
     next: Option<Box<Node<T>>>,
 }
 
-pub struct Graph<T>(Vec<Node<T>>);
+pub struct Graph<T>(pub Vec<Node<T>>);
 
 impl<T> Graph<T> {
-    pub fn new(data: T, weight: u8) -> Vec<Node<T>> {
-        vec![
-            Node {
-                data,
-                weight,
-                next: None,
-            }
-        ]
+    pub fn new(data: T, weight: u8) -> Graph<T> {
+        Graph(vec![Node {
+            data,
+            weight,
+            next: None,
+        }])
     }
 
-    pub fn with_capacity(data: T, weight: u8, capacity: usize)
-    -> Vec<Node<T>>
-    {
+    pub fn with_capacity(data: T, weight: u8, capacity: usize) -> Graph<T> {
         let mut node: Vec<Node<T>> = Vec::with_capacity(capacity);
         node.push(Node {
             data,
             weight,
             next: None,
         });
-        node
+        Graph(node)
     }
 
-    pub fn add(&self, data: T, weight: u8) {
+    pub fn get_node(&self) -> &Vec<Node<T>> {
+        &self.0
+    }
+
+    pub fn add_edge(&self, data: T, weight: u8) {
         todo!();
     }
-
 }
 
-impl<T> fmt::Display for Node<T> 
-where T: fmt::Display
+impl<T> fmt::Display for Node<T>
+where
+    T: fmt::Display,
 {
-
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut message = String::new();
         message.push_str(&format!("Data:\t{}\n", self.data));
@@ -54,5 +53,4 @@ where T: fmt::Display
         }
         write!(f, "{}", message)
     }
-
 }
