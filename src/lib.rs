@@ -9,13 +9,16 @@ pub struct Node<T> {
 }
 
 /// This is a struct that represents the whole graph data structure for
-/// particular instance
-pub struct Graph<T>(pub Vec<Node<T>>);
+/// particular instance.
+pub struct Vector<T>(pub Vec<Node<T>>);
+
+pub struct Graph<T>(Vec<Vector<T>>);
 
 /// Trait to restrict what the generic could be, and the following lines
-/// of code also allows the user to the turbo fish ::<>
+/// of code also allows the user to the turbo fish ::<>, instead of type
+/// annotation.
 pub trait Restriction {
-    fn alloc(init_size: usize) -> Vec<Graph<Self>>
+    fn alloc(init_size: usize) -> Graph<Self>
         where
             Self: Sized;
 }
@@ -25,9 +28,9 @@ macro_rules! make_restriction {
     ($($x:ty),*) => {
         $(
             impl Restriction for $x {
-                fn alloc(init_size: usize) -> Vec<Graph<Self>> {
-                    let data: Vec<Graph<$x>> = Vec::with_capacity(init_size);
-                    data
+                fn alloc(init_size: usize) -> Graph<Self> {
+                    let data: Vec<Vector<$x>> = Vec::with_capacity(init_size);
+                    Graph(data)
                 }
             }
         )*
@@ -35,19 +38,20 @@ macro_rules! make_restriction {
 }
 make_restriction![u8, u32, u64, f32, f64, String];
 
-pub fn new<Z: Restriction>(init_size: usize) -> Vec<Graph<Z>> {
-    Restriction::alloc(init_size)
-}
+/// Methods for Vector data
+impl<T: Restriction> Graph<T> {
 
-/// Methods for Graph data
-impl<T> Graph<T> {
-    pub fn get_node(&self) -> &Vec<Node<T>> {
-        &self.0
+    pub fn new(init_size: usize) -> Graph<T> {
+        Restriction::alloc(init_size)
     }
 
-    pub fn add_edge(&self, data: T, weight: u8) {
-        todo!();
-    }
+    //pub fn get_node(&self) -> &Vec<Node<T>> {
+        //&self.0
+    //}
+
+    //pub fn add_edge(&self, data: T, weight: u8) {
+        //todo!();
+    //}
 }
 
 impl<T> fmt::Display for Node<T>

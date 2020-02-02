@@ -1,5 +1,5 @@
 use graph::Graph;
 
 fn main() {
-    let gdata = graph::new::<u8>(10);
+    let gdata = Graph::<u8>::new(5);
 }
