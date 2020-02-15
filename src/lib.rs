@@ -1,3 +1,4 @@
+//! This is a library for implementing Graph data structures
 use std::fmt;
 
 /// This is a struct used to represent each node. The data it can house
@@ -18,7 +19,7 @@ pub struct Graph<'a ,T>(Vec<Vector<T>>, &'a [T]);
 /// of code also allows the user to the turbo fish ::<>, instead of type
 /// annotation.
 pub trait Restriction<'a, T> {
-    fn alloc(init_size: usize, template: &'a [T]) -> Graph<'a, Self>
+    fn alloc(template: &'a [T]) -> Graph<'a, Self>
     where
         Self: Sized;
 }
@@ -28,8 +29,11 @@ macro_rules! make_restriction {
     ($($datatype:ty),*) => {
         $(
             impl<'a> Restriction<'a, $datatype> for $datatype {
-                fn alloc(init_size: usize, template: &'a [$datatype]) -> Graph<'a, Self> {
-                    let data: Vec<Vector<$datatype>> = Vec::with_capacity(init_size);
+                fn alloc(template: &'a [$datatype]) -> Graph<'a, Self> {
+                    let data = Vec::<Vector<$datatype>>::with_capacity(template.len());
+                    // The compiler can infer the type here, so there is no need for 
+                    // annotation for types... but here done it anyway
+                    // Annotation goes after Vec b/c generic was with Vec
                     Graph(data, template)
                 }
             }
@@ -40,8 +44,8 @@ make_restriction![u8, u32, u64, f32, f64, String];
 
 /// Methods for Vector data
 impl<'a, T: Restriction<'a, T>> Graph<'a, T> {
-    pub fn new(init_size: usize, template: &'a [T]) -> Graph<'a, T> {
-        Restriction::alloc(init_size, template)
+    pub fn new(template: &'a [T]) -> Graph<'a, T> {
+        Restriction::alloc(template)
     }
 
     //pub fn get_node(&self) -> &Vec<Node<T>> {
@@ -53,10 +57,6 @@ impl<'a, T: Restriction<'a, T>> Graph<'a, T> {
             true => {
             },
             false => {
-               let n = self.0.len();
-               if n == self.0.capacity() { panic!("There is no more space left on the vector.") };
-
-
             },
         }
     }
