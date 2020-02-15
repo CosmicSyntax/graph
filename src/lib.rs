@@ -12,25 +12,25 @@ pub struct Node<T> {
 /// particular instance.
 pub struct Vector<T>(pub Vec<Node<T>>);
 
-pub struct Graph<T>(Vec<Vector<T>>);
+pub struct Graph<'a ,T>(Vec<Vector<T>>, &'a [T]);
 
 /// Trait to restrict what the generic could be, and the following lines
 /// of code also allows the user to the turbo fish ::<>, instead of type
 /// annotation.
-pub trait Restriction {
-    fn alloc(init_size: usize) -> Graph<Self>
-        where
-            Self: Sized;
+pub trait Restriction<'a, T> {
+    fn alloc(init_size: usize, template: &'a [T]) -> Graph<'a, Self>
+    where
+        Self: Sized;
 }
 
 // macro to expand to include 6 data types
 macro_rules! make_restriction {
-    ($($x:ty),*) => {
+    ($($datatype:ty),*) => {
         $(
-            impl Restriction for $x {
-                fn alloc(init_size: usize) -> Graph<Self> {
-                    let data: Vec<Vector<$x>> = Vec::with_capacity(init_size);
-                    Graph(data)
+            impl<'a> Restriction<'a, $datatype> for $datatype {
+                fn alloc(init_size: usize, template: &'a [$datatype]) -> Graph<'a, Self> {
+                    let data: Vec<Vector<$datatype>> = Vec::with_capacity(init_size);
+                    Graph(data, template)
                 }
             }
         )*
@@ -39,19 +39,27 @@ macro_rules! make_restriction {
 make_restriction![u8, u32, u64, f32, f64, String];
 
 /// Methods for Vector data
-impl<T: Restriction> Graph<T> {
-
-    pub fn new(init_size: usize) -> Graph<T> {
-        Restriction::alloc(init_size)
+impl<'a, T: Restriction<'a, T>> Graph<'a, T> {
+    pub fn new(init_size: usize, template: &'a [T]) -> Graph<'a, T> {
+        Restriction::alloc(init_size, template)
     }
 
     //pub fn get_node(&self) -> &Vec<Node<T>> {
-        //&self.0
+    //&self.0
     //}
 
-    //pub fn add_edge(&self, data: T, weight: u8) {
-        //todo!();
-    //}
+    pub fn add_edge(&mut self, src: T, des: T, dir: bool, weight: u8) {
+        match dir {
+            true => {
+            },
+            false => {
+               let n = self.0.len();
+               if n == self.0.capacity() { panic!("There is no more space left on the vector.") };
+
+
+            },
+        }
+    }
 }
 
 impl<T> fmt::Display for Node<T>
