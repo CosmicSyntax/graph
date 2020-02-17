@@ -1,5 +1,7 @@
 use graph::Graph;
 
 fn main() {
-    let gdata = Graph::<u8>::new(5);
+    let record = ["John", "Dan", "Riley", "Faith", "Logan"];
+    let mut gdata = Graph::<&str>::new(&record[..]);
+    gdata.add_edge("Logan", "John", false, 0);
 }
