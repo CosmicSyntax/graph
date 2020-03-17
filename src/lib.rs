@@ -26,7 +26,7 @@ pub trait Restriction<'a, T> {
 
 // macro to expand to include 7 data types
 macro_rules! make_restriction {
-    ($($datatype:ty),*) => {
+    ($($datatype: ty),*) => {
         $(
             impl<'a> Restriction<'a, $datatype> for $datatype {
                 fn alloc(template: &'a [$datatype]) -> Graph<'a, Self> {
